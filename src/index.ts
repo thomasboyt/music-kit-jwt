@@ -8,12 +8,12 @@ interface BaseParams {
 
 interface PrivateKeyContentParams extends BaseParams {
   privateKeyContent: string;
-  pathToPrivateKey: never;
+  pathToPrivateKey?: never;
 }
 
 interface PrivateKeyFileParams extends BaseParams {
-  privateKeyContent: never;
   pathToPrivateKey: string;
+  privateKeyContent?: never;
 }
 
 type Params = PrivateKeyContentParams | PrivateKeyFileParams;
@@ -46,9 +46,10 @@ export default function generateMusicKitToken(params: Params): string {
   ensureParams(params, ['teamId', 'keyId']);
   ensureOneParam(params, ['pathToPrivateKey', 'privateKeyContent']);
 
-  const privateKey = params.privateKeyContent
-    ? params.privateKeyContent
-    : getPrivateKeyFromFile(params.pathToPrivateKey);
+  const privateKey =
+    'privateKeyContent' in params
+      ? params.privateKeyContent
+      : getPrivateKeyFromFile(params.pathToPrivateKey);
 
   const teamId = params.teamId;
   const keyId = params.keyId;
